@@ -1,1 +1,26 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+df1 = pd.read_excel("ilanlar1.xlsx")
+df2 = pd.read_excel("ilanlar2.xlsx")
+df3 = pd.read_excel("ilanlar3.xlsx")
+df4 = pd.read_excel("ilanlar4.xlsx")
+df5 = pd.read_excel("ilanlar5.xlsx")
+df6 = pd.read_excel("ilanlar6.xlsx")
+df7 = pd.read_excel("ilanlar7.xlsx")
+df8 = pd.read_excel("ilanlar8.xlsx")
+df9 = pd.read_excel("ilanlar9.xlsx")
 
+veri = pd.concat([df1,df2,df3,df4,df5,df6,df7,df8,df9],ignore_index = False)
+veri
+veri.dropna()
+veri.to_excel("birlesmis_veri.xlsx",index = False)
+%matplotlib inline
+plt.figure(figsize = (20, 8))
+veri.groupby("Konum")["Pozisyon"].count().plot(kind = "bar",width=0.7)
+plt.title("Konuma Göre Mesleklerin Sayısı",size=30)
+plt.xlabel("Konum",size=25)
+plt.ylabel("Meslek Sayısı",size=25)
+plt.xticks(rotation = 90)
+#plt.grid(axis = "x")
+plt.show()
