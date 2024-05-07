@@ -1,1 +1,32 @@
+from bs4 import BeautifulSoup as bs
+import requests
+import pandas as pd
 
+Firma = []
+Konum = []
+Pozisyon = []
+
+url = "https://www.yenibiris.com/is-ilanlari?q=yaz%C4%B1l%C4%B1m%20m%C3%BChendisi"
+kullanıcı = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
+
+urlreq = requests.get(url, headers=kullanıcı)
+Html = urlreq.text
+
+parsedHtml = bs(Html, "html.parser")
+
+ilanlar = parsedHtml.find_all("div", {"class": "jobTitleLnk jobHoover"})
+sirketler = parsedHtml.find_all("div", {"class": "truncate jobCompanyLnk gtmCompanyName"})
+konumlar = parsedHtml.find_all("div", {"class": "col-lg-3 col-md-4 col-sm-3 col-xs-8"})
+
+for ilan, sirket, konum in zip(ilanlar, sirketler, konumlar):
+    ilan_adi = ilan.find("a").text.strip()
+    sirket_adi = sirket.find("a").text.strip() if sirket.find("a") else ""  # Sirket bulunamazsa boş dize ata
+    konum_bilgisi = konum.text.strip()
+    
+    Firma.append(sirket_adi)
+    Konum.append(konum_bilgisi)  # "Konum" olarak değiştirildi
+    Pozisyon.append(ilan_adi)  # "Pozisyon" olarak değiştirildi
+
+data = {"Firma": Firma, "Konum": Konum, "Pozisyon": Pozisyon}  # Sütun adları değiştirildi
+df = pd.DataFrame(data)
+df.to_excel("yazilim_muhendisi_ilanlari.xlsx", index=False)
